@@ -1,10 +1,15 @@
 from flask import Flask, g
 import models
+from resources.workouts import workouts_api
 
 DEBUG = True
 PORT = 8000
 
 app = Flask(__name__)
+
+#change this route later 
+app.register_blueprint(workouts_api, url_prefix='/api/v1')
+
 
 @app.before_request
 def before_request():
