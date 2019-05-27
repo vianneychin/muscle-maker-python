@@ -64,20 +64,72 @@ class WorkoutList(Resource):
     def get(self):
         return jsonify({'workouts': [{'muscle': 'glutes'}]})
 
+    @marshal_with(workout_fields)
     def post(self):
         args = self.reqparse.parse_args()
         print(args, '<----args (req.body)')
         workout = models.Workout.create(**args)
-        return jsonify({'workouts': [{'muscle': 'glutes'}]})
+        return (workout, 201)
         
 class Workout(Resource):
+    def __init__(self):
+        self.reqparse = reqparse.RequestParser()
+
+        self.reqparse.add_argument(
+            'muscle',
+            required=False,
+            help='No muscle name provided',
+            location=['form', 'json']
+        )
+        self.reqparse.add_argument(
+            'workout_name',
+            required=False,
+            help='No muscle name provided',
+            location=['form', 'json']
+        )
+
+        self.reqparse.add_argument(
+            'equipment',
+            required=False,
+            help='No muscle name provided',
+            location=['form', 'json']
+        )
+
+        self.reqparse.add_argument(
+            'weight',
+            required=False,
+            help='No muscle name provided',
+            location=['form', 'json']
+        )
+
+        self.reqparse.add_argument(
+            'sets',
+            required=False,
+            help='No muscle name provided',
+            location=['form', 'json']
+        )
+
+        self.reqparse.add_argument(
+            'reps',
+            required=False,
+            help='No muscle name provided',
+            location=['form', 'json']
+        )
+
+        super().__init__()
     #this is the show route
+
     def get(self, id):
         return jsonify({'muscle': 'glutes'})
 
     #this is the update route
+    @marshal_with(workout_fields)
     def put(self, id):
-        return jsonify({'muscle': 'glutes'})
+        args = self.reqparse.parse_args()
+        query = models.Workout.update(**args).where(models.Workout.id==id)
+        query.execute()
+        return (models.Workout.get(models.Workout.id==id), 200)
+
 
     #this is the delete route
     def delete(self, id):
