@@ -1,4 +1,4 @@
-from flask import jsonify, Blueprint
+from flask import jsonify, Blueprint, abort
 from flask_restful import (Resource, Api, reqparse, fields,                             marshal, marshal_with, url_for)
 
 import models
@@ -119,8 +119,14 @@ class Workout(Resource):
         super().__init__()
     #this is the show route
 
+    @marshal_with(workout_fields)
     def get(self, id):
-        return jsonify({'muscle': 'glutes'})
+        try:
+            workout = models.Workout.get(models.Workout.id==id)
+        except models.Workout.DoesNotExist:
+            abort(404)
+        else:
+            return(workout, 200)
 
     #this is the update route
     @marshal_with(workout_fields)
@@ -132,6 +138,7 @@ class Workout(Resource):
 
 
     #this is the delete route
+    @marshal_with(workout_fields)
     def delete(self, id):
         return jsonify({'muscle': 'glutes'})
 
