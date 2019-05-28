@@ -61,8 +61,10 @@ class WorkoutList(Resource):
 
         super().__init__()
 
+    @marshal_with(workout_fields)
     def get(self):
-        return jsonify({'workouts': [{'muscle': 'glutes'}]})
+        all_workouts = [marshal(workout, workout_fields) for workout in models.Workout]
+        return all_workouts
 
     @marshal_with(workout_fields)
     def post(self):
@@ -128,7 +130,7 @@ class Workout(Resource):
         else:
             return(workout, 200)
 
-    #this is the update route
+    #this is the edit route
     @marshal_with(workout_fields)
     def put(self, id):
         args = self.reqparse.parse_args()
@@ -138,9 +140,11 @@ class Workout(Resource):
 
 
     #this is the delete route
-    @marshal_with(workout_fields)
+    # @marshal_with(workout_fields)
     def delete(self, id):
-        return jsonify({'muscle': 'glutes'})
+        query = models.Workout.delete().where(models.Workout.id==id)
+        query.execute()
+        return {'message': 'This workout has been deleted'}
 
 workouts_api = Blueprint('resources.workouts',__name__)
 api = Api(workouts_api)
