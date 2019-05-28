@@ -1,6 +1,7 @@
 from flask import jsonify, Blueprint, abort
 from flask_restful import (Resource, Api, reqparse, fields,                             marshal, marshal_with, url_for)
 
+from flask_login import login_required, current_user
 import models
 
 workout_fields = {
@@ -27,42 +28,43 @@ class WorkoutList(Resource):
         self.reqparse.add_argument(
             'workout_name',
             required=False,
-            help='No muscle name provided',
+            help='No workout name provided',
             location=['form', 'json']
         )
 
         self.reqparse.add_argument(
             'equipment',
             required=False,
-            help='No muscle name provided',
+            help='No equiptment provided',
             location=['form', 'json']
         )
 
         self.reqparse.add_argument(
             'weight',
             required=False,
-            help='No muscle name provided',
+            help='No weight provided',
             location=['form', 'json']
         )
 
         self.reqparse.add_argument(
             'sets',
             required=False,
-            help='No muscle name provided',
+            help='No sets provided',
             location=['form', 'json']
         )
 
         self.reqparse.add_argument(
             'reps',
             required=False,
-            help='No muscle name provided',
+            help='No reps provided',
             location=['form', 'json']
         )
 
         super().__init__()
 
     def get(self):
-        return jsonify({'workouts': [{'muscle': 'glutes'}]})
+        all_workouts = [marshal(workout, workout_fields) for workout in models.Workout]
+        return all_workouts
 
     @marshal_with(workout_fields)
     def post(self):
@@ -128,7 +130,7 @@ class Workout(Resource):
         else:
             return(workout, 200)
 
-    #this is the update route
+    #this is the edit route
     @marshal_with(workout_fields)
     def put(self, id):
         args = self.reqparse.parse_args()
@@ -138,9 +140,11 @@ class Workout(Resource):
 
 
     #this is the delete route
-    @marshal_with(workout_fields)
+    # @marshal_with(workout_fields)
     def delete(self, id):
-        return jsonify({'muscle': 'glutes'})
+        query = models.Workout.delete().where(models.Workout.id==id)
+        query.execute()
+        return {'message': 'This workout has been deleted'}
 
 workouts_api = Blueprint('resources.workouts',__name__)
 api = Api(workouts_api)
