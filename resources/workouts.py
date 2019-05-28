@@ -7,7 +7,7 @@ workout_fields = {
     'id': fields.Integer,
     'muscle': fields.String,
     'workout_name': fields.String,
-    'equipment': fields.String, 
+    'equipment': fields.String,
     'weight': fields.Integer,
     'sets': fields.Integer,
     'reps': fields.Integer
