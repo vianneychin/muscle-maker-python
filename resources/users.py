@@ -7,6 +7,7 @@ from flask_restful import (Resource, Api, reqparse,
                                marshal_with, url_for)
 
 from flask_login import login_user, logout_user, login_required, current_user
+from flask_bcrypt import check_password_hash
 import models
 
 user_fields = {
@@ -87,7 +88,7 @@ class User(Resource):
         self.reqparse.add_argument(
             'password',
             required=True,
-            help='No password provided',
+            help='No password provided', 
             location=['form', 'json']
         )
         self.reqparse.add_argument(
@@ -106,8 +107,7 @@ class User(Resource):
             abort(404)
         else:
             return(user, 200)
-
-
+    
     @marshal_with(user_fields)
     def put(self, id):
         try:
@@ -126,13 +126,56 @@ class User(Resource):
         return {'message': 'This user has been deleted'}
 
 
+class Login(Resource):
+    def __init__(self):
+        self.reqparse = reqparse.RequestParser()
+        self.reqparse.add_argument(
+            'username',
+            required=True,
+            help='No username provided',
+            location=['form', 'json']
+        )
+        self.reqparse.add_argument(
+            'password',
+            required=True,
+            help='No password provided',
+            location=['form', 'json']
+        )
+        super().__init__()
+    def post(self):
+        try:
+            args = self.reqparse.parse_args()
+            user = models.User.get(models.User.username==args['username'])
+            if(user):
+                if(check_password_hash(user.password, args['password'])):
+                    return make_response(
+                        json.dumps({
+                            'user': marshal(user, user_fields),
+                            'message': "success",
+                        }), 200)
+                else:
+                    return make_response(
+                        json.dumps({
+                            'message': "incorrect password"
+                        }), 200)
+        except models.User.DoesNotExist:
+            return make_response(
+                json.dumps({
+                    'message': "Username does not exist"
+                }), 200) 
+
+
 
 
 users_api = Blueprint('resources.users', __name__)
 api = Api(users_api)
 api.add_resource(
     UserList,
-    '/register'
+    '/'
+)
+api.add_resource(
+    Login,
+    '/login'
 )
 
 api.add_resource(
@@ -140,5 +183,3 @@ api.add_resource(
     '/<int:id>',
     endpoint='user'
 )
-
-# api.add_resource()

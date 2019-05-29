@@ -2,6 +2,7 @@ from flask import Flask, g
 from flask_login import LoginManager
 import models
 from flask_cors import CORS
+from flask_login import current_user
 from resources.workouts import workouts_api
 from resources.users import users_api
 import config
@@ -36,7 +37,7 @@ app.register_blueprint(users_api, url_prefix='/users')
 def before_request():
     g.db = models.DATABASE
     g.db.connect()
-    # g.user = current_user
+    g.user = current_user
 
 @app.after_request
 def after_request( response ):
