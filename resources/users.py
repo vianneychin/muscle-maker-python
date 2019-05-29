@@ -14,7 +14,6 @@ user_fields = {
     'id': fields.Integer,
     'username': fields.String,
     'password': fields.String,
-
 }
 
 
@@ -52,6 +51,7 @@ class UserList(Resource):
 
     def post(self):
         #registrations
+        print("hi")
         args = self.reqparse.parse_args()
         print(args)
         if args['password'] == args['verify_password']:
@@ -181,5 +181,4 @@ api.add_resource(
 api.add_resource(
     User, 
     '/<int:id>',
-    endpoint='user'
 )
