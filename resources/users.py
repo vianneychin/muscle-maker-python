@@ -152,17 +152,17 @@ class Login(Resource):
                         json.dumps({
                             'user': marshal(user, user_fields),
                             'message': "success",
-                        }), 200)
+                        }), 202)
                 else:
                     return make_response(
                         json.dumps({
                             'message': "incorrect password"
-                        }), 200)
+                        }), 401)
         except models.User.DoesNotExist:
             return make_response(
                 json.dumps({
                     'message': "Username does not exist"
-                }), 200) 
+                }), 401) 
 
 
 
