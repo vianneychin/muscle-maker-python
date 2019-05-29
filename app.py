@@ -36,6 +36,7 @@ app.register_blueprint(users_api, url_prefix='/users')
 def before_request():
     g.db = models.DATABASE
     g.db.connect()
+    # g.user = current_user
 
 @app.after_request
 def after_request( response ):
