@@ -72,7 +72,7 @@ class WorkoutList(Resource):
         print(args, '<----args (req.body)')
         workout = models.Workout.create(**args)
         return (workout, 201)
-        
+
 class Workout(Resource):
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
@@ -149,7 +149,7 @@ class Workout(Resource):
 workouts_api = Blueprint('resources.workouts',__name__)
 api = Api(workouts_api)
 api.add_resource(
-    WorkoutList, 
+    WorkoutList,
     '/workouts',
     endpoint='workouts'
 )
@@ -158,4 +158,3 @@ api.add_resource(
     '/workouts/<int:id>',
     endpoint='workout'
 )
-    
