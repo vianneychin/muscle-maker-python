@@ -62,7 +62,6 @@ class UserList(Resource):
 
     def post(self):
         #registrations
-        print("hi")
         args = self.reqparse.parse_args()
         print(args)
         if args['password'] == args['verify_password']:
