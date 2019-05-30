@@ -16,6 +16,17 @@ user_fields = {
     'password': fields.String,
 }
 
+workout_fields = {
+    'id': fields.Integer,
+    'muscle': fields.String,
+    'workout_name': fields.String,
+    'equipment': fields.String, 
+    'weight': fields.Integer,
+    'sets': fields.Integer,
+    'reps': fields.Integer,
+    'created_by': fields.String
+}
+
 
 class UserList(Resource):
     def __init__(self):
@@ -99,14 +110,22 @@ class User(Resource):
         )
         super().__init__()
 
-    @marshal_with(user_fields)
+    # @marshal_with(user_fields)
+    @marshal_with(workout_fields)
     def get(self, id):
         try:
             user = models.User.get(models.User.id==id)
+            print(user.__dict__)
+            workouts = [marshal(workout, workout_fields)
+                for workout in models.Workout.select().where(models.Workout.created_by == user.id)
+            ]
+            
         except models.User.DoesNotExist:
             abort(404)
         else:
-            return(user, 200)
+            print(user)
+            # data = { 'user':  user, 'workout': workouts}
+            return (workouts, 200)
     
     @marshal_with(user_fields)
     def put(self, id):

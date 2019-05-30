@@ -11,7 +11,8 @@ workout_fields = {
     'equipment': fields.String, 
     'weight': fields.Integer,
     'sets': fields.Integer,
-    'reps': fields.Integer
+    'reps': fields.Integer,
+    'created_by': fields.String
 }
 
 
@@ -55,6 +56,13 @@ class WorkoutList(Resource):
 
         self.reqparse.add_argument(
             'reps',
+            required=False,
+            help='No reps provided',
+            location=['form', 'json']
+        )
+
+        self.reqparse.add_argument(
+            'created_by',
             required=False,
             help='No reps provided',
             location=['form', 'json']

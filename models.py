@@ -39,6 +39,7 @@ class Workout(Model):
     weight       = CharField()
     sets         = CharField()
     reps         = CharField()
+    created_by   = ForeignKeyField(User, related_name = 'workouts')
 
     class Meta:
         database = DATABASE
