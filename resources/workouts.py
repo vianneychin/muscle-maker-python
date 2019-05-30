@@ -154,6 +154,9 @@ class Workout(Resource):
         query.execute()
         return {'message': 'This workout has been deleted'}
 
+
+# class Logout(Resource):
+    
 workouts_api = Blueprint('resources.workouts',__name__)
 api = Api(workouts_api)
 api.add_resource(
