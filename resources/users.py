@@ -114,7 +114,7 @@ class User(Resource):
     def get(self, id):
         try:
             user = models.User.get(models.User.id==id)
-            print(user.__dict__)
+            print(user.__dict__, "this is the")
             workouts = [marshal(workout, workout_fields)
                 for workout in models.Workout.select().where(models.Workout.created_by == user.id)
             ]
@@ -182,6 +182,14 @@ class Login(Resource):
                     'message': "Username does not exist"
                 }), 401) 
 
+class Logout(Resource):
+    @login_required
+    def get(self):
+        logout_user()
+        print('user has logged out')
+        return "user has logged out"
+
+
 
 
 
@@ -199,4 +207,9 @@ api.add_resource(
 api.add_resource(
     User, 
     '/<int:id>',
+)
+
+api.add_resource(
+    Logout, 
+    '/logout',
 )
