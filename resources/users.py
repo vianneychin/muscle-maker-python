@@ -14,7 +14,17 @@ user_fields = {
     'id': fields.Integer,
     'username': fields.String,
     'password': fields.String,
+}
 
+workout_fields = {
+    'id': fields.Integer,
+    'muscle': fields.String,
+    'workout_name': fields.String,
+    'equipment': fields.String, 
+    'weight': fields.Integer,
+    'sets': fields.Integer,
+    'reps': fields.Integer,
+    'created_by': fields.String
 }
 
 
@@ -52,6 +62,7 @@ class UserList(Resource):
 
     def post(self):
         #registrations
+        print("hi")
         args = self.reqparse.parse_args()
         print(args)
         if args['password'] == args['verify_password']:
@@ -99,14 +110,22 @@ class User(Resource):
         )
         super().__init__()
 
-    @marshal_with(user_fields)
+    # @marshal_with(user_fields)
+    @marshal_with(workout_fields)
     def get(self, id):
         try:
             user = models.User.get(models.User.id==id)
+            print(user.__dict__)
+            workouts = [marshal(workout, workout_fields)
+                for workout in models.Workout.select().where(models.Workout.created_by == user.id)
+            ]
+            
         except models.User.DoesNotExist:
             abort(404)
         else:
-            return(user, 200)
+            print(user)
+            # data = { 'user':  user, 'workout': workouts}
+            return (workouts, 200)
     
     @marshal_with(user_fields)
     def put(self, id):
@@ -152,17 +171,17 @@ class Login(Resource):
                         json.dumps({
                             'user': marshal(user, user_fields),
                             'message': "success",
-                        }), 200)
+                        }), 202)
                 else:
                     return make_response(
                         json.dumps({
                             'message': "incorrect password"
-                        }), 200)
+                        }), 401)
         except models.User.DoesNotExist:
             return make_response(
                 json.dumps({
                     'message': "Username does not exist"
-                }), 200) 
+                }), 401) 
 
 
 
@@ -181,5 +200,4 @@ api.add_resource(
 api.add_resource(
     User, 
     '/<int:id>',
-    endpoint='user'
 )
